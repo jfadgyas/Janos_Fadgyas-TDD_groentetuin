@@ -6,6 +6,7 @@ const {
     getRevenueForCrop,
     getProfitForCrop,
     getTotalProfit,
+    getYieldForPlantEnv,
     getYieldForCropEnv,
     getRevenueForCropEnv,
     getProfitForCropEnv,
@@ -132,6 +133,51 @@ describe('getTotalProfit', () => {
     });
 });
 
+// Environment factors
+describe("getYieldForPlantEnv", () => {
+  test("Get yield for plant, with more environment factors", () => {
+      const corn = {
+          name: "corn",
+          yield: 30,
+          factors: {
+            sun: {
+              low: -50,
+              medium: 0,
+              high: 50,
+            },
+            wind: {
+              low: 10,
+              medium: 0,
+              high: -10,
+            },
+          },
+        };
+        const avocado = {
+          name: "avocado",
+          yield: 3,
+          factors: {
+            sun: {
+              low: -20,
+              medium: 0,
+              high: 50,
+            },
+            wind: {
+              low: 0,
+              medium: -30,
+              high: -60,
+            },
+          },
+        };
+        const environmentFactors = {
+          sun: "high",
+          wind: "high",
+          ground: "soft"
+        };
+      expect(getYieldForPlantEnv({crop: corn, numCrops: 10}, environmentFactors)).toBe(40.5);
+      expect(getYieldForPlantEnv({crop: avocado, numCrops: 10}, environmentFactors)).toBe(1.8);
+  });
+});
+
 describe("getYieldForCropEnv", () => {
     test("Get yield for crop, with 1 environment factor", () => {
         const corn = {
@@ -148,12 +194,7 @@ describe("getYieldForCropEnv", () => {
           const environmentFactors = {
             sun: "low",
           };
-        const input = {
-            crop: corn,
-            numCrops: 10,
-            environment: environmentFactors
-        };
-        expect(getYieldForCropEnv(input)).toBe(15);
+        expect(getYieldForCropEnv({crop: corn, numCrops: 10}, environmentFactors)).toBe(150);
     });
 });
 
@@ -196,8 +237,8 @@ describe("getYieldForCropEnv", () => {
             wind: "high",
             ground: "soft"
           };
-        expect(getYieldForCropEnv({crop: corn, numCrops: 10, environment: environmentFactors})).toBe(40.5);
-        expect(getYieldForCropEnv({crop: avocado, numCrops: 10, environment: environmentFactors})).toBe(1.8);
+        expect(getYieldForCropEnv({crop: corn, numCrops: 10}, environmentFactors)).toBe(405);
+        expect(getYieldForCropEnv({crop: avocado, numCrops: 10}, environmentFactors)).toBe(18);
     });
 });
 
@@ -240,8 +281,8 @@ describe('getRevenueForCropEnv', () => {
             wind: "high",
             ground: "soft"
           };
-          expect(getRevenueForCropEnv({crop: corn, numCrops: 10, salePrice: 3, environment: environmentFactors})).toBe(121.5);
-          expect(getRevenueForCropEnv({crop: avocado, numCrops: 10, salePrice: 2, environment: environmentFactors})).toBe(3.6);
+          expect(getRevenueForCropEnv({crop: corn, numCrops: 10, salePrice: 3}, environmentFactors)).toBe(1215);
+          expect(getRevenueForCropEnv({crop: avocado, numCrops: 10, salePrice: 2}, environmentFactors)).toBe(36);
     });
 });
 
@@ -284,12 +325,12 @@ describe('getProfitForCropEnv', () => {
             wind: "high",
             ground: "soft"
           };
-          expect(getProfitForCropEnv({crop: corn, numCrops: 10, cost: 2, salePrice: 3, environment: environmentFactors})).toBe(101.5);
-          expect(getProfitForCropEnv({crop: avocado, numCrops: 10, cost: 4, salePrice: 2, environment: environmentFactors})).toBe(-36.4);
+          expect(getProfitForCropEnv({crop: corn, numCrops: 10, cost: 2, salePrice: 3}, environmentFactors)).toBe(1195);
+          expect(getProfitForCropEnv({crop: avocado, numCrops: 10, cost: 4, salePrice: 2}, environmentFactors)).toBe(-4);
     });
 });
 
-describe('getTotalProfit', () => {
+describe('getTotalProfitEnv', () => {
     test('Calculate total profit with environmental factors', () => {
         const corn = {
             name: "corn",
@@ -329,9 +370,9 @@ describe('getTotalProfit', () => {
             ground: "soft"
           };
           const crops = [
-            { crop: corn, numCrops: 10, cost: 2, salePrice: 3, environment: environmentFactors },
-            { crop: avocado, numCrops: 10, cost: 4, salePrice: 2, environment: environmentFactors },
+            { crop: corn, numCrops: 10, cost: 2, salePrice: 3},
+            { crop: avocado, numCrops: 10, cost: 4, salePrice: 2}
         ];
-          expect(getTotalProfitEnv({crops})).toBe(65.1);
+          expect(getTotalProfitEnv({crops}, environmentFactors)).toBe(1191);
     });
 });

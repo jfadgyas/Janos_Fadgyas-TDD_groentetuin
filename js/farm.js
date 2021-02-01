@@ -1,56 +1,35 @@
-const getYieldForPlant = (plant) => {
-    return plant.yield;
-};
+const getYieldForPlant = plant => plant.yield;
 
-const getYieldForCrop = (plant) => {
-    return plant.crop.yield * plant.numCrops;
-};
+const getYieldForCrop = plant => plant.crop.yield * plant.numCrops;
 
-const getTotalYield = (plant) => {
-    return plant.crops.reduce((sum, item) => {
-        return sum + item.crop.yield * item.numCrops
-        },0);
-};
+const getTotalYield = plant => plant.crops.reduce((sum, item) => {
+        return sum + item.crop.yield * item.numCrops},0);
 
-const getCostsForCrop = (plant) => {
-    return plant.numCrops * plant.cost;
-};
+const getCostsForCrop = plant => plant.numCrops * plant.cost;
 
-const getRevenueForCrop = (plant) => {
-    return getYieldForCrop(plant) * plant.salePrice;
-};
+const getRevenueForCrop = plant => getYieldForCrop(plant) * plant.salePrice;
 
-const getProfitForCrop = (plant) => {
-    return getRevenueForCrop(plant) - getCostsForCrop(plant);
-};
+const getProfitForCrop = plant => getRevenueForCrop(plant) - getCostsForCrop(plant);
 
-const getTotalProfit = (plant) => {
-    return plant.crops.reduce((sum, item) => {
-        return sum + getProfitForCrop(item);
-        },0);
-};
+const getTotalProfit = plant => plant.crops.reduce((sum, item) => {
+        return sum + getProfitForCrop(item)},0);
 
-const getYieldForCropEnv = (plant) => {
-    for ( what in plant.crop.factors) {
-        plant.crop.yield *= 
-            (100+plant.crop.factors[what][plant.environment[what]])/100;
+const getYieldForPlantEnv = (plant, environment) => {
+    for (let what in plant.crop.factors) {
+        const factor = plant.crop.factors[what][environment[what]];
+        plant.crop.yield *= (100+factor)/100;
     };
     return plant.crop.yield;
-};
+}
 
-const getRevenueForCropEnv = (plant) => {
-    return getYieldForCropEnv(plant) * plant.salePrice;
-};
+const getYieldForCropEnv = (plant, environment) => getYieldForPlantEnv(plant, environment) * plant.numCrops;
 
-const getProfitForCropEnv = (plant) => {
-    return getRevenueForCropEnv(plant) - getCostsForCrop(plant);
-};
+const getRevenueForCropEnv = (plant, environment) => getYieldForCropEnv(plant, environment) * plant.salePrice;
 
-const getTotalProfitEnv = (plant) => {
-    return plant.crops.reduce((sum, item) => {
-        return sum + getProfitForCropEnv(item);
-        },0);
-};
+const getProfitForCropEnv = (plant, environment) => getRevenueForCropEnv(plant, environment) - getCostsForCrop(plant);
+
+const getTotalProfitEnv = (plant, environment) => plant.crops.reduce((sum, item) => {
+        return sum + getProfitForCropEnv(item, environment)},0);
 
 module.exports = {
     getYieldForPlant,
@@ -60,6 +39,7 @@ module.exports = {
     getRevenueForCrop,
     getProfitForCrop,
     getTotalProfit,
+    getYieldForPlantEnv,
     getYieldForCropEnv,
     getRevenueForCropEnv,
     getProfitForCropEnv,
